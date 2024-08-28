@@ -4,15 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts",
-    "watch": "tsc -w"
+    "build": "make",
+    "watch": "make watch",
+    "prepare": "pnpm build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/chrome": "^0.0.270",
     "@types/node": "^22.5.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
