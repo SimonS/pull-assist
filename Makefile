@@ -10,8 +10,8 @@ build:
 copy:
 	mkdir -p $(DIST_DIR)
 	cp $(SRC_DIR)/manifest.json $(DIST_DIR)/manifest.json
-	cp $(SRC_DIR)/popup.html $(DIST_DIR)/popup.html
-	cp $(SRC_DIR)/popup.css $(DIST_DIR)/popup.css
+	cp $(SRC_DIR)/*.html $(DIST_DIR)
+	cp $(SRC_DIR)/*.css $(DIST_DIR)
 	mkdir -p $(DIST_DIR)/icons
 	cp -r $(SRC_DIR)/icons/* $(DIST_DIR)/icons/
 
