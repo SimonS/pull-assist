@@ -6,7 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
         tabs[0].id!,
         { action: "analysePR" },
         (response) => {
-          console.log(response.data);
+          if (chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError.message);
+          } else {
+            console.log("received response:", response);
+          }
         }
       );
     });
