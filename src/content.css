@@ -1,0 +1,10 @@
+.pr-suggestion {
+  border: 3px solid green;
+  margin: 10px 0;
+}
+
+.pr-suggestion-content {
+  padding: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+}

@@ -1,8 +1,11 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log("content.ts");
+  console.log(request);
   if (request.action === "analysePR") {
     extractPRData()
-      .then((prData) => {
-        sendResponse({ prData }); // Send the data after the async function completes
+      .then((prData: DiffData[]) => {
+        console.log(prData);
+        sendResponse({ prData });
       })
       .catch((error) => {
         console.error("Error extracting PR data:", error);
@@ -11,9 +14,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     return true;
   }
+  if (request.action === "displayResults") {
+    console.log("displayResults");
+    console.log(request);
+    console.log(request.advice);
+    displayResults(request.advice);
+  }
 });
 
-async function extractPRData(): Promise<any> {
+type DiffData = {
+  filename: string;
+  patch: string;
+};
+
+async function extractPRData(): Promise<DiffData[]> {
   const url = window.location.href;
   const prNumberMatch = url.match(/\/pull\/(\d+)/);
   const repoMatch = url.match(/github\.com\/([^/]+)\/([^/]+)/);
@@ -43,10 +57,59 @@ async function extractPRData(): Promise<any> {
   );
 
   const files = await response.json();
-  const diffData = files.map((file: any) => ({
+  const diffData: DiffData[] = files.map((file: any) => ({
     filename: file.filename,
     patch: file.patch,
   }));
 
   return diffData;
+}
+
+function displayResults(advice: Advice[]) {
+  console.log("in displayResults");
+  console.log(advice);
+  advice.forEach((item) => {
+    const fileElement = document.querySelector(
+      `[data-path="${item.filename}"]`
+    );
+    if (!fileElement) return;
+
+    const diffTable =
+      fileElement.nextElementSibling?.querySelector(".diff-table");
+    if (!diffTable) return;
+
+    const adviceElement = document.createElement("tr");
+    adviceElement.className = "pr-suggestion";
+    adviceElement.innerHTML = `
+      <td colspan="4" class="pr-suggestion-content">
+        <strong>Lines:</strong> ${item.lines}<br>
+        <strong>Suggestion:</strong> ${item.advice}
+      </td>
+    `;
+
+    // Insert the advice after the relevant lines
+    const lineElements = diffTable.querySelectorAll(
+      ".js-file-line[data-split-side='right']"
+    );
+    let inserted = false;
+    for (let i = 0; i < lineElements.length; i++) {
+      // const lineNumber = lineElements[i].getAttribute("data-line-number");
+      const lineNumber = lineElements[i]
+        ?.querySelector("[data-line]")
+        ?.getAttribute("data-line");
+      if (
+        lineNumber &&
+        parseInt(lineNumber) > parseInt(item.lines.split("-")[0])
+      ) {
+        lineElements[i]
+          ?.closest("tbody")
+          ?.insertBefore(adviceElement, lineElements[i].closest("tr"));
+        inserted = true;
+        break;
+      }
+    }
+    if (!inserted) {
+      diffTable.appendChild(adviceElement);
+    }
+  });
 }
