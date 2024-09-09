@@ -20,13 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (chrome.runtime.lastError) {
             console.error(chrome.runtime.lastError.message);
           } else {
-            console.log("Analysing PR");
-            console.log("received response:", response);
-            console.log("calling analyzePRWithLLM");
             analyzePRWithLLM(response.prData).then((advice: Advice[]) => {
-              console.log("analysed");
-              console.log(advice);
-              console.log("sending displayResults");
               chrome.tabs.sendMessage(tabs[0].id!, {
                 action: "displayResults",
                 advice,
@@ -40,8 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function analyzePRWithLLM(diffData: DiffData[]): Promise<Advice[]> {
-  console.log("analyzing PR with LLM");
-  console.log("diffData", diffData);
   const changes = diffData
     .map(({ filename, patch }) => `${filename}:\n${patch}`)
     .join("\n\n");
@@ -68,14 +60,12 @@ async function analyzePRWithLLM(diffData: DiffData[]): Promise<Advice[]> {
     Changes:
     ${changes}
   `;
-  console.log("prompt", prompt);
   // Retrieve the API key from storage
   const apiKeyFromStorage = await new Promise<string>((resolve) => {
     chrome.storage.sync.get(["apiKey"], (result) => {
       resolve(result.apiKey || "");
     });
   });
-  console.log("apiKeyFromStorage", apiKeyFromStorage);
 
   if (!apiKeyFromStorage) {
     throw new Error("OpenAI API key not found in storage");
@@ -100,7 +90,6 @@ async function analyzePRWithLLM(diffData: DiffData[]): Promise<Advice[]> {
   }
 
   const data = await response.json();
-  console.log(data);
   const parsedData: Advice[] = JSON.parse(
     data.choices[0].message.content.trim()
   );

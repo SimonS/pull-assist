@@ -1,10 +1,7 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log("content.ts");
-  console.log(request);
   if (request.action === "analysePR") {
     extractPRData()
       .then((prData: DiffData[]) => {
-        console.log(prData);
         sendResponse({ prData });
       })
       .catch((error) => {
@@ -16,7 +13,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
   if (request.action === "displayResults") {
     console.log("displayResults");
-    console.log(request);
     console.log(request.advice);
     displayResults(request.advice);
   }
@@ -66,8 +62,6 @@ async function extractPRData(): Promise<DiffData[]> {
 }
 
 function displayResults(advice: Advice[]) {
-  console.log("in displayResults");
-  console.log(advice);
   advice.forEach((item) => {
     const fileElement = document.querySelector(
       `[data-path="${item.filename}"]`
