@@ -76,10 +76,19 @@ function displayResults(advice: Advice[]) {
     adviceElement.className = "pr-suggestion";
     adviceElement.innerHTML = `
       <td colspan="4" class="pr-suggestion-content">
-        <strong>Lines:</strong> ${item.lines}<br>
-        <strong>Suggestion:</strong> ${item.advice}
+        <div class="pr-suggestion-text">${item.advice}</div>
       </td>
     `;
+
+    // Add click event listener to toggle expansion
+    const contentElement = adviceElement.querySelector(
+      ".pr-suggestion-content"
+    );
+    if (contentElement) {
+      contentElement.addEventListener("click", () => {
+        contentElement.classList.toggle("expanded");
+      });
+    }
 
     // Insert the advice after the relevant lines
     const lineElements = diffTable.querySelectorAll(

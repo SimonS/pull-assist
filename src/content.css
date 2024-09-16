@@ -1,10 +1,45 @@
-.pr-suggestion {
-  border: 3px solid green;
-  margin: 10px 0;
+.pr-suggestion-content {
+  position: relative;
+  border: 2px solid #34d058;
+  border-radius: 6px;
+  margin: 12px 0;
+  background: #f0fff4;
+  color: #24292e;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: padding 0.3s ease-out;
+  padding: 13px;
 }
 
-.pr-suggestion-content {
-  padding: 10px;
-  font-size: 14px;
-  line-height: 1.4;
+.pr-suggestion-content::before {
+  content: "Suggestion";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #34d058;
+  color: white;
+  font-weight: bold;
+  padding: 4px 12px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  font-size: 12px;
+}
+
+.pr-suggestion-text {
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: height 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.pr-suggestion-content.expanded {
+  padding: 36px 12px 12px;
+}
+
+.pr-suggestion-content.expanded .pr-suggestion-text {
+  height: auto;
+  opacity: 1;
 }
