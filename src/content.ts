@@ -1,4 +1,8 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "addAnalyzeButton") {
+    addAnalyzeButton();
+    sendResponse({ success: true });
+  }
   if (request.action === "analysePR") {
     extractPRData()
       .then((prData: DiffData[]) => {
@@ -17,11 +21,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     displayResults(request.advice);
   }
 });
-
-type DiffData = {
-  filename: string;
-  patch: string;
-};
 
 async function extractPRData(): Promise<DiffData[]> {
   const url = window.location.href;
@@ -62,6 +61,7 @@ async function extractPRData(): Promise<DiffData[]> {
 }
 
 function displayResults(advice: Advice[]) {
+  hideSpinner();
   advice.forEach((item) => {
     const fileElement = document.querySelector(
       `[data-path="${item.filename}"]`
@@ -115,4 +115,79 @@ function displayResults(advice: Advice[]) {
       diffTable.appendChild(adviceElement);
     }
   });
+}
+
+function addAnalyzeButton() {
+  const prHeader = document.querySelector(".gh-header-actions");
+  if (prHeader && !document.querySelector("#analyze-pr-button")) {
+    const analyzeButton = document.createElement("button");
+    analyzeButton.id = "analyze-pr-button";
+    analyzeButton.textContent = "Analyze PR";
+    analyzeButton.className = "btn btn-sm";
+    analyzeButton.addEventListener("click", handleAnalyzeClick);
+    prHeader.appendChild(analyzeButton);
+  }
+}
+
+async function handleAnalyzeClick() {
+  try {
+    showSpinner();
+    const prData = await extractPRData();
+
+    // Send a message to the background script to perform the analysis
+    chrome.runtime.sendMessage({ action: "analyzePR", prData }, (response) => {
+      if (chrome.runtime.lastError) {
+        throw new Error(chrome.runtime.lastError.message);
+      }
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      displayResults(response.advice);
+    });
+  } catch (error) {
+    console.error("Error analyzing PR:", error);
+    alert("Failed to analyze PR. Please check the console for details.");
+    hideSpinner();
+  }
+}
+
+// Function to check if we're on a PR page
+function isPRPage() {
+  return window.location.pathname.includes("/pull/");
+}
+
+// Function to add the button when on a PR page
+function addButtonIfPRPage() {
+  if (isPRPage()) {
+    addAnalyzeButton();
+  }
+}
+
+// Call addButtonIfPRPage when the content script loads
+addButtonIfPRPage();
+
+// Use MutationObserver to detect URL changes (for single-page apps)
+const observer = new MutationObserver(() => {
+  if (isPRPage()) {
+    addAnalyzeButton();
+  }
+});
+
+observer.observe(document.querySelector("body")!, {
+  childList: true,
+  subtree: true,
+});
+
+function showSpinner() {
+  const spinner = document.createElement("div");
+  spinner.id = "pr-analysis-spinner";
+  spinner.innerHTML = '<div class="spinner"></div><p>Analysing PR...</p>';
+  document.body.appendChild(spinner);
+}
+
+function hideSpinner() {
+  const spinner = document.getElementById("pr-analysis-spinner");
+  if (spinner) {
+    spinner.remove();
+  }
 }
