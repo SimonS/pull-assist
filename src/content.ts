@@ -152,7 +152,7 @@ async function handleAnalyzeClick() {
 }
 
 // Function to check if we're on a PR page
-function isPRPage() {
+export function isPRPage() {
   return window.location.pathname.includes("/pull/");
 }
 

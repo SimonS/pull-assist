@@ -7,6 +7,9 @@ all: clean build copy
 build:
 	pnpm tsc
 
+test:
+	pnpm test
+
 copy:
 	mkdir -p $(DIST_DIR)
 	cp $(SRC_DIR)/manifest.json $(DIST_DIR)/manifest.json
