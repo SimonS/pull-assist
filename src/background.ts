@@ -14,7 +14,7 @@ type DiffData = {
   patch: string;
 };
 
-async function analyzePRWithLLM(diffData: DiffData[]): Promise<Advice[]> {
+async function analysePRWithLLM(diffData: DiffData[]): Promise<Advice[]> {
   const changes = diffData
     .map(({ filename, patch }) => `${filename}:\n${patch}`)
     .join("\n\n");
@@ -79,8 +79,8 @@ async function analyzePRWithLLM(diffData: DiffData[]): Promise<Advice[]> {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "analyzePR") {
-    analyzePRWithLLM(request.prData)
+  if (request.action === "analysePR") {
+    analysePRWithLLM(request.prData)
       .then((advice: Advice[]) => {
         sendResponse({ advice });
       })

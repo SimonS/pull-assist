@@ -1,6 +1,8 @@
+import { isPRPage } from "./utils";
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "addAnalyzeButton") {
-    addAnalyzeButton();
+  if (request.action === "addAnalyseButton") {
+    addAnalyseButton();
     sendResponse({ success: true });
   }
   if (request.action === "analysePR") {
@@ -117,25 +119,25 @@ function displayResults(advice: Advice[]) {
   });
 }
 
-function addAnalyzeButton() {
+function addAnalyseButton() {
   const prHeader = document.querySelector(".gh-header-actions");
-  if (prHeader && !document.querySelector("#analyze-pr-button")) {
-    const analyzeButton = document.createElement("button");
-    analyzeButton.id = "analyze-pr-button";
-    analyzeButton.textContent = "Analyze PR";
-    analyzeButton.className = "btn btn-sm";
-    analyzeButton.addEventListener("click", handleAnalyzeClick);
-    prHeader.appendChild(analyzeButton);
+  if (prHeader && !document.querySelector("#analyse-pr-button")) {
+    const analyseButton = document.createElement("button");
+    analyseButton.id = "analyse-pr-button";
+    analyseButton.textContent = "Analyse PR";
+    analyseButton.className = "btn btn-sm";
+    analyseButton.addEventListener("click", handleAnalyseClick);
+    prHeader.appendChild(analyseButton);
   }
 }
 
-async function handleAnalyzeClick() {
+async function handleAnalyseClick() {
   try {
     showSpinner();
     const prData = await extractPRData();
 
     // Send a message to the background script to perform the analysis
-    chrome.runtime.sendMessage({ action: "analyzePR", prData }, (response) => {
+    chrome.runtime.sendMessage({ action: "analysePR", prData }, (response) => {
       if (chrome.runtime.lastError) {
         throw new Error(chrome.runtime.lastError.message);
       }
@@ -145,21 +147,16 @@ async function handleAnalyzeClick() {
       displayResults(response.advice);
     });
   } catch (error) {
-    console.error("Error analyzing PR:", error);
-    alert("Failed to analyze PR. Please check the console for details.");
+    console.error("Error analysing PR:", error);
+    alert("Failed to analyse PR. Please check the console for details.");
     hideSpinner();
   }
-}
-
-// Function to check if we're on a PR page
-export function isPRPage() {
-  return window.location.pathname.includes("/pull/");
 }
 
 // Function to add the button when on a PR page
 function addButtonIfPRPage() {
   if (isPRPage()) {
-    addAnalyzeButton();
+    addAnalyseButton();
   }
 }
 
@@ -169,7 +166,7 @@ addButtonIfPRPage();
 // Use MutationObserver to detect URL changes (for single-page apps)
 const observer = new MutationObserver(() => {
   if (isPRPage()) {
-    addAnalyzeButton();
+    addAnalyseButton();
   }
 });
 

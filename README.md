@@ -37,7 +37,7 @@ To get an OpenAI API key, sign up at [OpenAI](https://openai.com/) and create a 
 ## Usage
 
 1. Navigate to a GitHub pull request
-1. Click the "Analyze PR" button that appears in the PR header
+1. Click the "Analyse PR" button that appears in the PR header
 1. After a shortish wait, the suggestions should appear inline with the code changes (they're collapsed by default, click to expand)
 
 ## License

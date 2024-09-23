@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { isPRPage } from "./content";
+import { isPRPage } from "./utils";
 
-describe("content", () => {
+describe("utils", () => {
   describe("isPRPage", () => {
     function setFakeWindowLocation(pathname: string) {
       Object.defineProperty(window, "location", {

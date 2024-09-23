@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "make",
-    "watch": "make watch",
+    "build": "tsc && esbuild src/content.ts --bundle --outfile=dist/content.js",
+    "watch": "tsc -w & esbuild src/content.ts --bundle --outfile=dist/content.js --watch",
     "prepare": "pnpm build",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -20,6 +20,7 @@
     "@types/chrome": "^0.0.270",
     "@types/node": "^22.5.1",
     "@vitest/ui": "^2.1.1",
+    "esbuild": "^0.24.0",
     "jsdom": "^25.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",

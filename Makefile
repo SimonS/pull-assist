@@ -5,7 +5,7 @@ DIST_DIR := dist
 all: clean build copy
 
 build:
-	pnpm tsc
+	pnpm run build
 
 test:
 	pnpm test
@@ -22,6 +22,6 @@ clean:
 	rm -rf $(DIST_DIR)
 
 watch:
-	pnpm tsc -w
+	pnpm run watch
 
 .PHONY: all build copy clean watch
